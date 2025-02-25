@@ -28,7 +28,7 @@ const formSchema = z.object({
     .min(1, "Selecione um tipo de combustível"),
 });
 
-export default function VehicleForm() {
+export function VehicleForm() {
   const {
     handleSubmit,
     control,
@@ -54,7 +54,7 @@ export default function VehicleForm() {
 
   return (
     <form
-      className="space-y-4 max-w-md w-full mx-auto p-4 bg-white shadow-md rounded-2xl"
+      className="space-y-4 max-w-md w-full mx-auto h-fit p-4 bg-white shadow rounded-2xl"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div>

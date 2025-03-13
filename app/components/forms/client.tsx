@@ -4,6 +4,12 @@ import { Button } from "app/components/ui/button";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import type { Client } from "../tables/client";
+
+interface ClientFormProps {
+  initialData?: Client;
+  onSubmit: (data: any) => void;
+}
 
 type Form = z.infer<typeof formSchema>;
 
@@ -15,7 +21,7 @@ const formSchema = z.object({
   endereco: z.string().min(1, "O endereço é obrigatório"),
 });
 
-export function ClientForm() {
+export function ClientForm({ initialData, onSubmit }: ClientFormProps) {
   const {
     handleSubmit,
     control,
@@ -23,7 +29,7 @@ export function ClientForm() {
     register,
   } = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       nome: "",
       cpf: "",
       telefone: "",
@@ -32,14 +38,18 @@ export function ClientForm() {
     },
   });
 
-  function onSubmit(values: Form) {
-    console.log(values);
+  function handleFormSubmit(values: Form) {
+    if (initialData) {
+      onSubmit({ ...values, id: initialData.id });
+    } else {
+      onSubmit(values);
+    }
   }
 
   return (
     <form
       className="space-y-4 max-w-md w-full mx-auto p-4 bg-white shadow rounded-2xl"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(handleFormSubmit)}
     >
       <div>
         <Label htmlFor="nome">Nome</Label>

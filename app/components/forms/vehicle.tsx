@@ -11,8 +11,14 @@ import { Button } from "app/components/ui/button";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import type { Vehicle } from "../tables/vehicles";
 
 type Form = z.infer<typeof formSchema>;
+
+interface VehicleFormProps {
+  initialData?: Vehicle;
+  onSubmit: (data: any) => void;
+}
 
 const formSchema = z.object({
   placa: z.string().min(7, "A placa deve ter pelo menos 7 caracteres"),
@@ -28,7 +34,7 @@ const formSchema = z.object({
     .min(1, "Selecione um tipo de combustível"),
 });
 
-export function VehicleForm() {
+export function VehicleForm({ initialData, onSubmit }: VehicleFormProps) {
   const {
     handleSubmit,
     control,
@@ -36,7 +42,7 @@ export function VehicleForm() {
     register,
   } = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       placa: "",
       modelo: "",
       marca: "",
@@ -48,14 +54,18 @@ export function VehicleForm() {
     },
   });
 
-  function onSubmit(values: Form) {
-    console.log(values);
+  function handleFormSubmit(values: Form) {
+    if (initialData) {
+      onSubmit({ ...values, id: initialData.id });
+    } else {
+      onSubmit(values);
+    }
   }
 
   return (
     <form
       className="space-y-4 max-w-md w-full mx-auto h-fit p-4 bg-white shadow rounded-2xl"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(handleFormSubmit)}
     >
       <div>
         <Label htmlFor="placa">Placa</Label>

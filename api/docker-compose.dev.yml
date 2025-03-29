@@ -1,0 +1,43 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev.yml
+    container_name: vehicles_api
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3333:3333"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    networks:
+      - vehicles-network
+  db:
+    image: postgres:alpine
+    container_name: vehicles_db
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vehicles-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  vehicles-network:

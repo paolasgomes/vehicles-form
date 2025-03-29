@@ -18,6 +18,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import type { Client } from "./client";
 
 export type Vehicle = {
   id: string;
@@ -34,7 +35,7 @@ export type Vehicle = {
 
 interface VehicleTableProps {
   vehicles: Vehicle[];
-  onEdit?: (vehicle: Vehicle) => void;
+  onEdit?: (vehicle: Vehicle & { client?: Client }) => void;
   onDelete?: (id: string) => void;
 }
 

@@ -3,11 +3,11 @@ import { UpdateVehicleService } from "../services/update";
 
 export class UpdateVehicleController {
   static async handle(request: Request, response: Response) {
-    const { id } = request.params;
+    const { clientId } = request.query;
 
     const updatedVehicle = {
       ...request.body,
-      id,
+      clientId,
     };
 
     const updateVehicleService = new UpdateVehicleService();

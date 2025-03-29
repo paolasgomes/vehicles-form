@@ -6,6 +6,7 @@ import { PlusCircle } from "lucide-react";
 import { VehiclesTable, type Vehicle } from "~/components/tables/vehicles";
 import { api } from "~/services/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import type { Client } from "~/components/tables/client";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -42,9 +43,12 @@ export default function Vehicles() {
   const { mutate: update } = useMutation({
     mutationKey: ["updateVehicle"],
     mutationFn: async (vehicle: Vehicle) => {
-      const { clientId, ...rest } = vehicle;
+      const { clientId, id, ...rest } = vehicle;
 
-      const { data } = await api.patch(`/vehicles?clientId=${clientId}`, rest);
+      const { data } = await api.patch(`/vehicles/${id}?clientId=${clientId}`, {
+        ...rest,
+        id,
+      });
 
       return data;
     },
@@ -75,8 +79,12 @@ export default function Vehicles() {
 
   const handleDeleteVehicle = (id: string) => deleteVehicle(id);
 
-  const handleEditClick = (vehicle: Vehicle) => {
-    setEditingVehicle(vehicle);
+  const handleEditClick = (vehicle: Vehicle & { client?: Client }) => {
+    setEditingVehicle({
+      ...vehicle,
+      yearOfManufacture: String(vehicle.yearOfManufacture),
+      clientId: String(vehicle.client?.id),
+    });
     setIsFormVisible(true);
   };
 

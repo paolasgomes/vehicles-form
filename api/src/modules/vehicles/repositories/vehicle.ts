@@ -41,7 +41,11 @@ export class VehiclesRepository implements IVehiclesRepository {
   }
 
   list(): Promise<Vehicle[]> {
-    const vehicles = this.repository.find();
+    const vehicles = this.repository.find({
+      relations: {
+        client: true,
+      },
+    });
 
     return vehicles;
   }

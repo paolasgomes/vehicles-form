@@ -31,7 +31,7 @@ export function Sidebar() {
 
   return (
     <div
-      className={`h-screen ${
+      className={`${
         isOpen ? "w-64" : "w-20"
       } bg-gray-900 text-white flex flex-col transition-all duration-300`}
     >
@@ -46,18 +46,19 @@ export function Sidebar() {
         <Button
           variant="ghost"
           className="w-full flex items-center justify-start gap-3"
-          onClick={() => navigate("/painel/veiculos")}
-        >
-          <Car className="h-5 w-5" />
-          {isOpen && "Veículos"}
-        </Button>
-        <Button
-          variant="ghost"
-          className="w-full flex items-center justify-start gap-3"
           onClick={() => navigate("/painel/clientes")}
         >
           <Users className="h-5 w-5" />
           {isOpen && "Clientes"}
+        </Button>
+
+        <Button
+          variant="ghost"
+          className="w-full flex items-center justify-start gap-3"
+          onClick={() => navigate("/painel/veiculos")}
+        >
+          <Car className="h-5 w-5" />
+          {isOpen && "Veículos"}
         </Button>
       </nav>
 

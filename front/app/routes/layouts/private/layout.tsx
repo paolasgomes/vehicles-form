@@ -3,12 +3,12 @@ import { Sidebar } from "~/components/sidebar";
 
 export default function PrivateLayout() {
   return (
-    <main className="h-screen flex w-full">
+    <main className="grid grid-cols-[auto_1fr] h-screen">
       <Sidebar />
 
-      <div className="max-h-screen overflow-y-scroll w-full">
+      <section className="p-[5%] overflow-y-auto">
         <Outlet />
-      </div>
+      </section>
     </main>
   );
 }

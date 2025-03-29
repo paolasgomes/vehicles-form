@@ -21,14 +21,15 @@ import {
 
 export type Vehicle = {
   id: string;
-  placa: string;
-  modelo: string;
-  marca: string;
-  anoFabricacao: string;
-  cor: string;
-  chassi: string;
+  licensePlate: string;
+  model: string;
+  brand: string;
+  yearOfManufacture: string;
+  color: string;
+  chassis: string;
   renavam: string;
-  combustivel: string;
+  fuelType: string;
+  clientId: string;
 };
 
 interface VehicleTableProps {
@@ -68,23 +69,25 @@ export function VehiclesTable({
           ) : (
             vehicles.map((vehicle) => (
               <TableRow key={vehicle.id}>
-                <TableCell className="font-medium">{vehicle.placa}</TableCell>
-                <TableCell>{vehicle.modelo}</TableCell>
-                <TableCell>{vehicle.marca}</TableCell>
+                <TableCell className="font-medium">
+                  {vehicle.licensePlate}
+                </TableCell>
+                <TableCell>{vehicle.model}</TableCell>
+                <TableCell>{vehicle.brand}</TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {vehicle.anoFabricacao}
+                  {vehicle.yearOfManufacture}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {vehicle.cor}
+                  {vehicle.color}
                 </TableCell>
                 <TableCell className="hidden lg:table-cell">
-                  {vehicle.chassi}
+                  {vehicle.chassis}
                 </TableCell>
                 <TableCell className="hidden lg:table-cell">
                   {vehicle.renavam}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {formatCombustivel(vehicle.combustivel)}
+                  {formatCombustivel(vehicle.fuelType)}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>

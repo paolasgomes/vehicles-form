@@ -1,7 +1,7 @@
 import { Input } from "app/components/ui/input";
 import { Label } from "app/components/ui/label";
 import { Button } from "app/components/ui/button";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import type { Client } from "../tables/client";
@@ -14,11 +14,11 @@ interface ClientFormProps {
 type Form = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
-  nome: z.string().min(1, "O nome é obrigatório"),
+  name: z.string().min(1, "O nome é obrigatório"),
   cpf: z.string().min(11, "O CPF deve ter 11 caracteres"),
-  telefone: z.string().min(10, "O telefone deve ter pelo menos 10 dígitos"),
+  phone: z.string().min(10, "O telefone deve ter pelo menos 10 dígitos"),
   email: z.string().email("E-mail inválido"),
-  endereco: z.string().min(1, "O endereço é obrigatório"),
+  address: z.string().min(1, "O endereço é obrigatório"),
 });
 
 export function ClientForm({ initialData, onSubmit }: ClientFormProps) {
@@ -30,11 +30,11 @@ export function ClientForm({ initialData, onSubmit }: ClientFormProps) {
   } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
-      nome: "",
+      name: "",
       cpf: "",
-      telefone: "",
+      phone: "",
       email: "",
-      endereco: "",
+      address: "",
     },
   });
 
@@ -53,10 +53,10 @@ export function ClientForm({ initialData, onSubmit }: ClientFormProps) {
     >
       <div>
         <Label htmlFor="nome">Nome</Label>
-        <Input id="nome" placeholder="Digite o nome" {...register("nome")} />
-        {errors.nome && (
+        <Input id="nome" placeholder="Digite o nome" {...register("name")} />
+        {errors.name && (
           <span className="mt-1 text-[0.75rem] text-red-500">
-            {errors.nome.message}
+            {errors.name.message}
           </span>
         )}
       </div>
@@ -76,11 +76,11 @@ export function ClientForm({ initialData, onSubmit }: ClientFormProps) {
         <Input
           id="telefone"
           placeholder="Digite o telefone"
-          {...register("telefone")}
+          {...register("phone")}
         />
-        {errors.telefone && (
+        {errors.phone && (
           <span className="mt-1 text-[0.75rem] text-red-500">
-            {errors.telefone.message}
+            {errors.phone.message}
           </span>
         )}
       </div>
@@ -104,11 +104,11 @@ export function ClientForm({ initialData, onSubmit }: ClientFormProps) {
         <Input
           id="endereco"
           placeholder="Digite o endereço"
-          {...register("endereco")}
+          {...register("address")}
         />
-        {errors.endereco && (
+        {errors.address && (
           <span className="mt-1 text-[0.75rem] text-red-500">
-            {errors.endereco.message}
+            {errors.address.message}
           </span>
         )}
       </div>

@@ -18,11 +18,11 @@ import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
 
 export type Client = {
   id: string;
-  nome: string;
+  name: string;
   cpf: string;
-  telefone: string;
+  phone: string;
   email: string;
-  endereco: string;
+  address: string;
 };
 
 interface ClientTableProps {
@@ -55,16 +55,16 @@ export function ClientsTable({ clients, onEdit, onDelete }: ClientTableProps) {
           ) : (
             clients.map((client) => (
               <TableRow key={client.id}>
-                <TableCell className="font-medium">{client.nome}</TableCell>
+                <TableCell className="font-medium">{client.name}</TableCell>
                 <TableCell>{formatCPF(client.cpf)}</TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {formatPhone(client.telefone)}
+                  {formatPhone(client.phone)}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
                   {client.email}
                 </TableCell>
                 <TableCell className="hidden lg:table-cell">
-                  {truncateText(client.endereco, 30)}
+                  {truncateText(client.address, 30)}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>

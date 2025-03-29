@@ -12,6 +12,9 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import type { Vehicle } from "../tables/vehicles";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "~/services/api";
+import type { Client } from "../tables/client";
 
 type Form = z.infer<typeof formSchema>;
 
@@ -21,20 +24,32 @@ interface VehicleFormProps {
 }
 
 const formSchema = z.object({
-  placa: z.string().min(7, "A placa deve ter pelo menos 7 caracteres"),
-  modelo: z.string().min(1, "O modelo é obrigatório"),
-  marca: z.string().min(1, "A marca é obrigatória"),
-  anoFabricacao: z.string().min(1, "Ano de fabricação inválido"),
-  cor: z.string().min(1, "A cor é obrigatória"),
-  chassi: z.string().min(1, "O chassi é obrigatório"),
+  licensePlate: z.string().min(7, "A placa deve ter pelo menos 7 caracteres"),
+  model: z.string().min(1, "O modelo é obrigatório"),
+  brand: z.string().min(1, "A marca é obrigatória"),
+  yearOfManufacture: z.string().min(1, "Ano de fabricação inválido"),
+  color: z.string().min(1, "A cor é obrigatória"),
+  chassis: z.string().min(1, "O chassi é obrigatório"),
   renavam: z.string().min(1, "O renavam é obrigatório"),
-  combustivel: z
+  fuelType: z
     .string()
     .nonempty("Selecione um tipo de combustível")
     .min(1, "Selecione um tipo de combustível"),
+  clientId: z
+    .string()
+    .nonempty("Selecione um cliente")
+    .min(1, "Selecione um cliente"),
 });
 
 export function VehicleForm({ initialData, onSubmit }: VehicleFormProps) {
+  const { data: clients, isFetching } = useQuery<Client[]>({
+    queryKey: ["clients"],
+    queryFn: async () => {
+      const { data } = await api.get("/clients");
+      return data;
+    },
+  });
+
   const {
     handleSubmit,
     control,
@@ -43,14 +58,15 @@ export function VehicleForm({ initialData, onSubmit }: VehicleFormProps) {
   } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
-      placa: "",
-      modelo: "",
-      marca: "",
-      cor: "",
-      chassi: "",
+      licensePlate: "",
+      model: "",
+      brand: "",
+      yearOfManufacture: "",
+      color: "",
+      chassis: "",
       renavam: "",
-      combustivel: "",
-      anoFabricacao: "",
+      fuelType: "",
+      clientId: "",
     },
   });
 
@@ -68,12 +84,52 @@ export function VehicleForm({ initialData, onSubmit }: VehicleFormProps) {
       onSubmit={handleSubmit(handleFormSubmit)}
     >
       <div>
-        <Label htmlFor="placa">Placa</Label>
-        <Input id="placa" placeholder="Digite a placa" {...register("placa")} />
-
-        {errors.placa && (
+        <Label htmlFor="cliente">Cliente</Label>
+        <Controller
+          name="clientId"
+          control={control}
+          render={({ field: { onChange, ...field } }) => (
+            <Select onValueChange={onChange} disabled={isFetching} {...field}>
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={
+                    isFetching ? "Carregando..." : "Selecione um cliente"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {!isFetching && clients?.length === 0 && (
+                  <span className="px-2 py-1.5 text-sm font-semibold">
+                    Nenhum cliente encontrado
+                  </span>
+                )}
+                {clients?.map((client) => (
+                  <SelectItem key={client.id} value={client.id}>
+                    {client.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.clientId && (
           <span className="mt-1 text-[0.75rem] text-red-500">
-            {errors.placa.message}
+            {errors.clientId.message}
+          </span>
+        )}
+      </div>
+
+      <div>
+        <Label htmlFor="placa">Placa</Label>
+        <Input
+          id="placa"
+          placeholder="Digite a placa"
+          {...register("licensePlate")}
+        />
+
+        {errors.licensePlate && (
+          <span className="mt-1 text-[0.75rem] text-red-500">
+            {errors.licensePlate.message}
           </span>
         )}
       </div>
@@ -83,21 +139,21 @@ export function VehicleForm({ initialData, onSubmit }: VehicleFormProps) {
         <Input
           id="modelo"
           placeholder="Digite o modelo"
-          {...register("modelo")}
+          {...register("model")}
         />
-        {errors.modelo && (
+        {errors.model && (
           <span className="mt-1 text-[0.75rem] text-red-500">
-            {errors.modelo.message}
+            {errors.model.message}
           </span>
         )}
       </div>
 
       <div>
         <Label htmlFor="marca">Marca</Label>
-        <Input id="marca" placeholder="Digite a marca" {...register("marca")} />
-        {errors.marca && (
+        <Input id="marca" placeholder="Digite a marca" {...register("brand")} />
+        {errors.brand && (
           <span className="mt-1 text-[0.75rem] text-red-500">
-            {errors.marca.message}
+            {errors.brand.message}
           </span>
         )}
       </div>
@@ -108,35 +164,35 @@ export function VehicleForm({ initialData, onSubmit }: VehicleFormProps) {
           id="ano"
           type="number"
           placeholder="Digite o ano"
-          {...register("anoFabricacao")}
+          {...register("yearOfManufacture")}
         />
-        {errors.anoFabricacao && (
+        {errors.yearOfManufacture && (
           <span className="mt-1 text-[0.75rem] text-red-500">
-            {errors.anoFabricacao.message}
+            {errors.yearOfManufacture.message}
           </span>
         )}
       </div>
 
       <div>
         <Label htmlFor="cor">Cor</Label>
-        <Input id="cor" placeholder="Digite a cor" {...register("cor")} />
-        {errors.cor && (
+        <Input id="cor" placeholder="Digite a cor" {...register("color")} />
+        {errors.color && (
           <span className="mt-1 text-[0.75rem] text-red-500">
-            {errors.cor.message}
+            {errors.color.message}
           </span>
         )}
       </div>
 
       <div>
-        <Label htmlFor="chassi">Chassi</Label>
+        <Label htmlFor="chassi">Chassis</Label>
         <Input
           id="chassi"
           placeholder="Digite o chassi"
-          {...register("chassi")}
+          {...register("chassis")}
         />
-        {errors.chassi && (
+        {errors.chassis && (
           <span className="mt-1 text-[0.75rem] text-red-500">
-            {errors.chassi.message}
+            {errors.chassis.message}
           </span>
         )}
       </div>
@@ -158,7 +214,7 @@ export function VehicleForm({ initialData, onSubmit }: VehicleFormProps) {
       <div>
         <Label htmlFor="combustivel">Tipo de Combustível</Label>
         <Controller
-          name="combustivel"
+          name="fuelType"
           control={control}
           render={({ field: { onChange, ...field } }) => (
             <Select onValueChange={onChange} {...field}>
@@ -175,9 +231,9 @@ export function VehicleForm({ initialData, onSubmit }: VehicleFormProps) {
             </Select>
           )}
         />
-        {errors.combustivel && (
+        {errors.fuelType && (
           <span className="mt-1 text-[0.75rem] text-red-500">
-            {errors.combustivel.message}
+            {errors.fuelType.message}
           </span>
         )}
       </div>

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { VehiclesTable, type Vehicle } from "~/components/tables/vehicles";
+import { api } from "~/services/api";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -13,41 +15,77 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Vehicles() {
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const {
+    data: vehicles,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ["vehicles"],
+    queryFn: async () => {
+      const { data } = await api.get("/vehicles");
+      return data;
+    },
+  });
+
+  const { mutate: create } = useMutation({
+    mutationKey: ["createVehicle"],
+    mutationFn: async (vehicle: Omit<Vehicle, "id">) => {
+      const { clientId, ...rest } = vehicle;
+
+      const { data } = await api.post(`/vehicles?clientId=${clientId}`, rest);
+
+      return data;
+    },
+    onSuccess: () => refetch(),
+  });
+
+  const { mutate: update } = useMutation({
+    mutationKey: ["updateVehicle"],
+    mutationFn: async (vehicle: Vehicle) => {
+      const { clientId, ...rest } = vehicle;
+
+      const { data } = await api.patch(`/vehicles?clientId=${clientId}`, rest);
+
+      return data;
+    },
+    onSuccess: () => refetch(),
+  });
+
+  const { mutate: deleteVehicle } = useMutation({
+    mutationKey: ["deleteVehicle"],
+    mutationFn: async (id: string) => {
+      await api.delete(`/vehicles/${id}`);
+    },
+    onSuccess: () => refetch(),
+  });
+
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   const handleAddVehicle = (formData: Omit<Vehicle, "id">) => {
-    const newVehicle = {
-      id: crypto.randomUUID(),
-      ...formData,
-    };
-
-    setVehicles([...vehicles, newVehicle]);
+    create(formData);
     setIsFormVisible(false);
   };
 
   const handleUpdateVehicle = (updatedVehicle: Vehicle) => {
-    setVehicles(
-      vehicles.map((vehicle) =>
-        vehicle.id === updatedVehicle.id ? updatedVehicle : vehicle
-      )
-    );
+    update(updatedVehicle);
     setEditingVehicle(null);
     setIsFormVisible(false);
   };
 
-  const handleDeleteVehicle = (id: string) => {
-    setVehicles(vehicles.filter((vehicle) => vehicle.id !== id));
-  };
+  const handleDeleteVehicle = (id: string) => deleteVehicle(id);
 
   const handleEditClick = (vehicle: Vehicle) => {
     setEditingVehicle(vehicle);
     setIsFormVisible(true);
   };
 
+  if (isFetching) {
+    return null;
+  }
+
   return (
-    <div className="flex-1 flex flex-col gap-10 p-[5%]">
+    <div className="flex flex-col gap-10">
       <div className="flex items-center justify-between">
         <h2 className="text-4xl">
           {isFormVisible && !editingVehicle && "Cadastrar veículo"}
